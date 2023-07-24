@@ -32,7 +32,7 @@ def register():
         flash(error)
     return render_template("auth/register.html")
 
-@bp.rout('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -41,17 +41,17 @@ def login():
         error = None
 
         user = db.execute(
-                          "SELECR * FROM user WHERE username = ?",(username,)
+                          "SELECT * FROM user WHERE username = ?",(username,)
                           ).fetchone()
         if user is None:
             error = 'Incorrect username !!'
-        elif not check_password_hash('password', password):
+        elif not check_password_hash(user['password'], password):
             error = 'Incorrect password !!'
         
         if error is None:
             #session is a dict 
             session.clear()
-            session['user_id'] = user[id]
+            session['user_id'] = user['id']
             return redirect(url_for('index'))
         flash(error)
     return render_template('auth/login.html')
